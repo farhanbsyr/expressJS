@@ -10,6 +10,7 @@ import { creatUserValidationSchemas } from "../utils/validationSchemas.mjs";
 import { mockData } from "../utils/constans.mjs";
 import { resolvebyUserId } from "../utils/middlewares.mjs";
 import { User } from "../mongoose/schema/user.mjs";
+import { hashPasword } from "../utils/helper.mjs";
 const router = Router();
 
 // get request
@@ -48,25 +49,15 @@ router.get(
 router.post(
   "/api/users",
   checkSchema(creatUserValidationSchemas),
-  // [ diganti dengan schema
-  //   body("userName")
-  //     .notEmpty()
-  //     .withMessage("username cannot be empty")
-  //     .isLength({ min: 5, max: 35 })
-  //     .withMessage("username must be at 5-35 charachter"),
-  //   body("displayName")
-  //     .notEmpty()
-  //     .withMessage("displayName cannot be empty")
-  //     .isLength({ min: 5, max: 35 })
-  //     .withMessage("displayName must be at 5-35 charachter"),
-  // ],
   async (request, response) => {
     const result = validationResult(request);
     if (!result.isEmpty()) return response.status(400).send(result.array());
 
     const data = matchedData(request);
-    const newUser = new User(data);
     console.log(data);
+    data.password = hashPasword(data.password);
+    console.log(data);
+    const newUser = new User(data);
     try {
       const savedUser = await newUser.save();
       return response.status(201).send(newUser);
