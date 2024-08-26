@@ -4,9 +4,17 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import { mockData } from "./utils/constans.mjs";
 import passport from "passport";
+import mongoose from "mongoose";
 import "./strategies/local-strategy.mjs";
 // fase pertama setup PORT
 const app = express();
+
+mongoose
+  .connect("mongodb://localhost/express")
+  .then(() => {
+    console.log("connected database");
+  })
+  .catch((err) => console.log(`Error: ${err}`));
 
 const PORT = process.env.PORT || 3000;
 

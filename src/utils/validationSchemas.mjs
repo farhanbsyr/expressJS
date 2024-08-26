@@ -1,5 +1,5 @@
 export const creatUserValidationSchemas = {
-  userName: {
+  username: {
     isLength: {
       options: {
         min: 5,
@@ -22,5 +22,8 @@ export const creatUserValidationSchemas = {
     notEmpty: {
       errorMessage: "displayName cannot be empty",
     },
+  },
+  password: {
+    notEmpty: true,
   },
 };

@@ -9,7 +9,7 @@ import {
 import { creatUserValidationSchemas } from "../utils/validationSchemas.mjs";
 import { mockData } from "../utils/constans.mjs";
 import { resolvebyUserId } from "../utils/middlewares.mjs";
-
+import { User } from "../mongoose/schema/user.mjs";
 const router = Router();
 
 // get request
@@ -60,15 +60,20 @@ router.post(
   //     .isLength({ min: 5, max: 35 })
   //     .withMessage("displayName must be at 5-35 charachter"),
   // ],
-  (request, response) => {
+  async (request, response) => {
     const result = validationResult(request);
-    console.log(result);
-    if (!result.isEmpty())
-      return response.status(400).send({ errors: result.array() });
+    if (!result.isEmpty()) return response.status(400).send(result.array());
+
     const data = matchedData(request);
-    const newUser = { id: mockData[mockData.length - 1].id + 1, ...data };
-    mockData.push(newUser);
-    return response.status(201).send(newUser);
+    const newUser = new User(data);
+    console.log(data);
+    try {
+      const savedUser = await newUser.save();
+      return response.status(201).send(newUser);
+    } catch (err) {
+      console.log(`Error ${err}`);
+      return response.sendStatus(400);
+    }
   }
 );
 
