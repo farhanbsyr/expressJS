@@ -6,6 +6,7 @@ import { mockData } from "./utils/constans.mjs";
 import passport from "passport";
 import mongoose from "mongoose";
 import "./strategies/local-strategy.mjs";
+import MongoStore from "connect-mongo";
 // fase pertama setup PORT
 const app = express();
 
@@ -32,6 +33,9 @@ app.use(
     cookie: {
       maxAge: 60000 * 60,
     },
+    store: MongoStore.create({
+      client: mongoose.connection.getClient(),
+    }),
   })
 );
 
