@@ -5,8 +5,9 @@ import session from "express-session";
 import { mockData } from "./utils/constans.mjs";
 import passport from "passport";
 import mongoose from "mongoose";
-import "./strategies/local-strategy.mjs";
+// import "./strategies/local-strategy.mjs";
 import MongoStore from "connect-mongo";
+import "./strategies/discord-strategy.mjs";
 // fase pertama setup PORT
 const app = express();
 
@@ -67,6 +68,15 @@ app.post("/api/auth/logout", (request, response) => {
   });
 });
 
+app.get("/api/auth/discord", passport.authenticate("discord"));
+app.get(
+  "/api/auth/discord/redirect",
+  passport.authenticate("discord"),
+  (request, response) => {
+    response.sendStatus(200);
+  }
+);
+
 // unsigned cookie && signedCookie
 // session part 1 && 2
 // app.get("/", (req, res) => {
@@ -115,3 +125,7 @@ app.post("/api/auth/logout", (request, response) => {
 //   if (!request.session.user) return response.sendStatus(401);
 //   return response.send(request.session.cart ?? []);
 // });
+
+// client secret = DRRdPL96EImN9-J2tEVNiaj-yaqa0p3p
+// client ID = 1277887092634157130
+// http://localhost:3000/api/auth/discord/redirect
