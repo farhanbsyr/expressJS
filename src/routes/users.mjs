@@ -11,6 +11,7 @@ import { mockData } from "../utils/constans.mjs";
 import { resolvebyUserId } from "../utils/middlewares.mjs";
 import { User } from "../mongoose/schema/user.mjs";
 import { hashPasword } from "../utils/helper.mjs";
+import { createUserHandler, getUserByIdHandler } from "../handlers/users.mjs";
 const router = Router();
 
 // get request
@@ -49,35 +50,11 @@ router.get(
 router.post(
   "/api/users",
   checkSchema(creatUserValidationSchemas),
-  async (request, response) => {
-    const result = validationResult(request);
-    if (!result.isEmpty()) return response.status(400).send(result.array());
-
-    const data = matchedData(request);
-    console.log(data);
-    data.password = hashPasword(data.password);
-    console.log(data);
-    const newUser = new User(data);
-    try {
-      const savedUser = await newUser.save();
-      return response.status(201).send(newUser);
-    } catch (err) {
-      console.log(`Error ${err}`);
-      return response.sendStatus(400);
-    }
-  }
+  createUserHandler
 );
 
 // query params
-router.get("/api/users/:id", (request, response) => {
-  const parsedId = parseInt(request.params.id);
-  if (isNaN(parsedId)) {
-    return response.status(400).send(`Bad Request : your id not valid`);
-  }
-  const findUser = mockData.find((user) => user.id === parsedId);
-  if (!findUser) return response.sendStatus(404);
-  return response.send(findUser);
-});
+router.get("/api/users/:id", resolvebyUserId, getUserByIdHandler);
 
 // put
 router.put("/api/users/:id", resolvebyUserId, (request, response) => {
